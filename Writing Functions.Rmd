@@ -132,7 +132,7 @@ sim_mean_sd(100)
 
 You can set default values like above, but don't need to. So in the instance above, if mu isn't specified, it would default to 3. But if one is specified then it will go with the specified one.
 
-
+## review napolean dynamite
 
 
 
