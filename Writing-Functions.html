@@ -355,16 +355,38 @@ display: none;
 </div>
 
 
+<pre class="r"><code>library(tidyverse)
+library(rvest)
+library(httr)
+library(ggridges)
+library(patchwork)
+library(scales)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;
+)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d</code></pre>
 <div id="do-something-simple" class="section level2">
 <h2>Do something simple</h2>
 <pre class="r"><code>x_vec = rnorm(30, mean = 5, sd = 3)
 
 (x_vec - mean(x_vec)) / sd(x_vec)</code></pre>
-<pre><code>##  [1]  0.11411106  0.00954919  0.46188008  0.11424474  0.59331744  1.35376911
-##  [7]  1.10879839 -0.25537314  0.98476778 -0.74614904  1.00903515  1.92089085
-## [13]  0.51255490 -1.78606545  0.73674934  0.20844321 -0.36043056  0.57298532
-## [19] -0.38613742 -0.40502672  0.74719237 -1.19935337  0.65160477 -1.13018700
-## [25] -0.59909340 -1.12651720  0.93022872 -0.09661249 -1.59778893 -2.34138769</code></pre>
+<pre><code>##  [1]  0.09279699  1.94863438 -1.90442937 -0.13114172 -0.55449873  0.25286731
+##  [7]  0.22937795 -0.09191916 -0.37146640 -0.66817416 -1.38305269  2.76563677
+## [13]  0.54916844 -0.01190688  0.67089063  0.91806990  0.88813142 -0.60186259
+## [19] -0.14273156 -1.64212055 -0.74918346 -0.83155677  1.27801042 -0.48743147
+## [25]  0.99752895  0.33264096 -0.17804992 -0.80872285 -0.69614020  0.33063438</code></pre>
 <p>I want a function to compute z-scores.</p>
 <pre class="r"><code>z_scores = function(x) {
   
@@ -382,11 +404,11 @@ display: none;
 }
 
 z_scores(x_vec)</code></pre>
-<pre><code>##  [1]  0.11411106  0.00954919  0.46188008  0.11424474  0.59331744  1.35376911
-##  [7]  1.10879839 -0.25537314  0.98476778 -0.74614904  1.00903515  1.92089085
-## [13]  0.51255490 -1.78606545  0.73674934  0.20844321 -0.36043056  0.57298532
-## [19] -0.38613742 -0.40502672  0.74719237 -1.19935337  0.65160477 -1.13018700
-## [25] -0.59909340 -1.12651720  0.93022872 -0.09661249 -1.59778893 -2.34138769</code></pre>
+<pre><code>##  [1]  0.09279699  1.94863438 -1.90442937 -0.13114172 -0.55449873  0.25286731
+##  [7]  0.22937795 -0.09191916 -0.37146640 -0.66817416 -1.38305269  2.76563677
+## [13]  0.54916844 -0.01190688  0.67089063  0.91806990  0.88813142 -0.60186259
+## [19] -0.14273156 -1.64212055 -0.74918346 -0.83155677  1.27801042 -0.48743147
+## [25]  0.99752895  0.33264096 -0.17804992 -0.80872285 -0.69614020  0.33063438</code></pre>
 <pre class="r"><code>z_scores(3)</code></pre>
 <pre><code>## Error in z_scores(3): Input must have at least 3 numbers.</code></pre>
 <pre class="r"><code>z_scores(&quot;my name is laura&quot;)</code></pre>
@@ -395,6 +417,85 @@ z_scores(x_vec)</code></pre>
 <pre><code>## Error in z_scores(mtcars): Input must be numeric.</code></pre>
 <pre class="r"><code>z_scores(c(TRUE, TRUE, FALSE, TRUE))</code></pre>
 <pre><code>## Error in z_scores(c(TRUE, TRUE, FALSE, TRUE)): Input must be numeric.</code></pre>
+</div>
+<div id="multiple-outputs" class="section level2">
+<h2>Multiple outputs</h2>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Input must be numeric.&quot;)
+  }
+  
+  if(length(x)&lt;3){
+    stop(&quot;Input must have at least 3 numbers.&quot;)
+  }
+  
+ mean_x = mean(x)
+ sd_x = sd(x)
+  
+  tibble(
+    mean = mean_x,
+    sd = sd_x
+  )
+}
+
+z_scores(x_vec)</code></pre>
+<pre><code>##  [1]  0.09279699  1.94863438 -1.90442937 -0.13114172 -0.55449873  0.25286731
+##  [7]  0.22937795 -0.09191916 -0.37146640 -0.66817416 -1.38305269  2.76563677
+## [13]  0.54916844 -0.01190688  0.67089063  0.91806990  0.88813142 -0.60186259
+## [19] -0.14273156 -1.64212055 -0.74918346 -0.83155677  1.27801042 -0.48743147
+## [25]  0.99752895  0.33264096 -0.17804992 -0.80872285 -0.69614020  0.33063438</code></pre>
+<pre class="r"><code>x_vec = rnorm(100, mean = 3, sd = 4)
+mean_and_sd(x_vec)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  2.70  3.83</code></pre>
+</div>
+<div id="multiple-inputs" class="section level2">
+<h2>Multiple inputs</h2>
+<p>I’d like to do this with a function.</p>
+<pre class="r"><code>sim_data = 
+  tibble(
+    x = rnorm(n = 100, mean = 4, sd = 4)
+  )
+
+sim_data %&gt;%
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+  )</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  3.79  4.31</code></pre>
+<pre class="r"><code>sim_mean_sd = function (samp_size, mu=3, sigma=3)  {
+  
+  sim_data = 
+  tibble(
+    x = rnorm(n = samp_size, mean = mu, sd = sigma)
+  )
+
+sim_data %&gt;%
+  summarize(
+    mean = mean(x),
+    sd = sd(x)
+  )
+}
+
+sim_mean_sd(samp_size=100,mu=6,sigma=3)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  5.61  3.03</code></pre>
+<pre class="r"><code>sim_mean_sd(100)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  3.13  3.19</code></pre>
+<p>You can set default values like above, but don’t need to. So in the
+instance above, if mu isn’t specified, it would default to 3. But if one
+is specified then it will go with the specified one.</p>
 </div>
 
 
